@@ -68,9 +68,9 @@ void loop() {
 
   unsigned long duration = now - last_time;
   if(duration >= 100) {
-    int speed = (current_position - last_position);
+    int speed = (current_position - right.last_position);
     Serial.println(speed);
-    last_position = current_position;
+    right.last_position = current_position;
     last_time = now;
   }
   // // With any substantial delay added, Encoder can only track
