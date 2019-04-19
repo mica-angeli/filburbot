@@ -56,9 +56,12 @@ void Filburbot_Motor_setSpeed(Filburbot_Motor *m, int speed) {
 Encoder left_enc(4, 5);
 Encoder right_enc(6, 7);
 
+unsigned long last_command = millis();
+
 void cmdDiffCallback(const filburbot_msgs::CmdDiffVel& msg) {
   left.setpoint = msg.left_speed;
   right.setpoint = msg.right_speed;
+  last_command = millis();
 }
 
 ros::Subscriber<filburbot_msgs::CmdDiffVel> sub_cmddiff("cmd_diff", &cmdDiffCallback );
@@ -99,13 +102,19 @@ void loop() {
 
     publishEncoders();
 
-    Filburbot_Motor_setSpeed(&left, left.setpoint);
-    Filburbot_Motor_setSpeed(&right, right.setpoint);
-
     left.last_position = left.position;
     right.last_position = right.position;
 
     last_time = millis();
+  }
+
+  if((millis() - last_command) >= 1000) {
+    Filburbot_Motor_setSpeed(&left, 0);
+    Filburbot_Motor_setSpeed(&right, 0);
+  }
+  else {
+    Filburbot_Motor_setSpeed(&left, left.setpoint);
+    Filburbot_Motor_setSpeed(&right, right.setpoint);
   }
 
   nh.spinOnce();
