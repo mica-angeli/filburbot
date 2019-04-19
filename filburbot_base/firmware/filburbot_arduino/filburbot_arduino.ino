@@ -10,7 +10,7 @@
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 
-ros::NodeHandle_<ArduinoHardware, 1, 1, 128, 512> nh;
+ros::NodeHandle_<ArduinoHardware, 1, 1, 128, 256> nh;
 filburbot_msgs::Encoders encoders_msg;
 ros::Publisher pub_encoders("encoders", &encoders_msg);
 
@@ -21,6 +21,7 @@ struct Filburbot_Motor {
   int encoder2_pin;
   long position;
   long last_position;
+  int speed;
 };
 
 Filburbot_Motor left, right;
@@ -50,9 +51,6 @@ void setup() {
   right.encoder2_pin = 6;
   Filburbot_Motor_init(&right);
 
-  // Serial.begin(9600);
-  // Serial.println("Filburbot");
-
   AFMS.begin();
 
   left.motor->setSpeed(255);
@@ -72,15 +70,19 @@ void loop() {
   right.position = right_enc.read();
 
   if((millis() - last_time) >= 100) {
-    // int speed = (right_position - right.last_position);
+    left.speed = (left.position - left.last_position);
+    right.speed = (right.position - right.last_position);
 
-    // Serial.println(speed);
-    encoders_msg.left = left.position;
-    encoders_msg.right = right.position;
+    encoders_msg.left_speed = left.speed;
+    encoders_msg.right_speed = right.speed;
+    encoders_msg.left_position = left.position;
+    encoders_msg.right_position = right.position;
     encoders_msg.header.stamp = nh.now();
     pub_encoders.publish(&encoders_msg);
 
-    // right.last_position = right_position;
+    left.last_position = left.position;
+    right.last_position = right.position;
+
     last_time = millis();
   }
 
