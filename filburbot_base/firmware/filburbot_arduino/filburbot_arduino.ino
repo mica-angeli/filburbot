@@ -24,6 +24,7 @@ struct Filburbot_Motor {
   int speed;
   int setpoint;
   int last_setpoint;
+  int last_speed_command;
 };
 
 Filburbot_Motor left, right;
@@ -39,18 +40,23 @@ void Filburbot_Motor_init(Filburbot_Motor *m) {
   m->last_setpoint = 0;
 }
 
-void Filburbot_Motor_setSpeed(Filburbot_Motor *m, int speed) {
-  if(speed > 0) {
+void Filburbot_Motor_setSpeed(Filburbot_Motor *m, int speed_command) {
+  if(speed_command == m->last_speed_command) {
+    return;
+  }
+
+  if(speed_command > 0) {
     m->motor->run(FORWARD);
   }
-  else if (speed < 0) {
+  else if (speed_command < 0) {
     m->motor->run(BACKWARD);
   }
   else {
     m->motor->run(RELEASE);
   }
 
-  m->motor->setSpeed(abs(speed));
+  m->motor->setSpeed(abs(speed_command));
+  m->last_speed_command = speed_command;
 }
 
 Encoder left_enc(4, 5);
