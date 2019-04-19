@@ -8,6 +8,11 @@
 #define ENCODER_DO_NOT_USE_INTERRUPTS
 #include <Encoder.h>
 
+#include <FastPID.h>
+
+FastPID left_pid(0.0, 1.0, 0.0, 10, 9, true);
+FastPID right_pid(0.0, 1.0, 0.0, 10, 9, true);
+
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 
 ros::NodeHandle_<ArduinoHardware, 1, 1, 128, 256> nh;
@@ -23,7 +28,7 @@ struct Filburbot_Motor {
   long last_position;
   int speed;
   int setpoint;
-  int last_setpoint;
+  int speed_command;
   int last_speed_command;
 };
 
@@ -37,7 +42,8 @@ void Filburbot_Motor_init(Filburbot_Motor *m) {
   m->last_position = 0;
   m->speed = 0;
   m->setpoint = 0;
-  m->last_setpoint = 0;
+  m->speed_command = 0;
+  m->last_speed_command = 0;
 }
 
 void Filburbot_Motor_setSpeed(Filburbot_Motor *m, int speed_command) {
@@ -46,16 +52,16 @@ void Filburbot_Motor_setSpeed(Filburbot_Motor *m, int speed_command) {
   }
 
   if(speed_command > 0) {
-    m->motor->run(FORWARD);
+    m->motor->run(BACKWARD);
   }
   else if (speed_command < 0) {
-    m->motor->run(BACKWARD);
+    m->motor->run(FORWARD);
   }
   else {
     m->motor->run(RELEASE);
   }
 
-  m->motor->setSpeed(abs(speed_command));
+  m->motor->setSpeed(abs(speed_command) > 255 ? 255 : abs(speed_command));
   m->last_speed_command = speed_command;
 }
 
@@ -85,18 +91,16 @@ void setup() {
 
   AFMS.begin();
 
-  left.motor->setSpeed(0);
-  left.motor->run(BACKWARD);
-  right.motor->setSpeed(0);
-  right.motor->run(FORWARD);
+  Filburbot_Motor_setSpeed(&left, 0);
+  Filburbot_Motor_setSpeed(&right, 0);
 
   // Initialize ROS
   nh.initNode();
   nh.advertise(pub_encoders);
   nh.subscribe(sub_cmddiff);
 }
-unsigned long last_time = millis();
 
+unsigned long last_time = millis();
 
 void loop() {
   left.position = left_enc.read();
@@ -108,19 +112,27 @@ void loop() {
 
     publishEncoders();
 
+
+    if((millis() - last_command) >= 1000) {
+      // Stop motors and reset PIDs if command is dropped
+      left.speed_command = 0;
+      right.speed_command = 0;
+      left_pid.clear();
+      right_pid.clear();
+    }
+    else {
+      // Compute commands from PID
+      left.speed_command = left_pid.step(left.setpoint, left.speed);
+      right.speed_command = right_pid.step(right.setpoint, right.speed);
+    }
+
+    Filburbot_Motor_setSpeed(&left, left.speed_command);
+    Filburbot_Motor_setSpeed(&right, right.speed_command);
+
     left.last_position = left.position;
     right.last_position = right.position;
 
     last_time = millis();
-  }
-
-  if((millis() - last_command) >= 1000) {
-    Filburbot_Motor_setSpeed(&left, 0);
-    Filburbot_Motor_setSpeed(&right, 0);
-  }
-  else {
-    Filburbot_Motor_setSpeed(&left, left.setpoint);
-    Filburbot_Motor_setSpeed(&right, right.setpoint);
   }
 
   nh.spinOnce();
