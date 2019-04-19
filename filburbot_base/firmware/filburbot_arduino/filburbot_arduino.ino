@@ -22,6 +22,8 @@ struct Filburbot_Motor {
   long position;
   long last_position;
   int speed;
+  int setpoint;
+  int last_setpoint;
 };
 
 Filburbot_Motor left, right;
@@ -30,15 +32,36 @@ void Filburbot_Motor_init(Filburbot_Motor *m) {
   m->motor = AFMS.getMotor(m->motor_pin);
   pinMode(m->encoder1_pin, INPUT);
   pinMode(m->encoder2_pin, INPUT);
+  m->position = 0;
   m->last_position = 0;
+  m->speed = 0;
+  m->setpoint = 0;
+  m->last_setpoint = 0;
 }
 
-byte Filburbot_Motor_get_encoder_state(Filburbot_Motor *m) {
-  return digitalRead(m->encoder2_pin) << 1 | digitalRead(m->encoder1_pin);
+void Filburbot_Motor_setSpeed(Filburbot_Motor *m, int speed) {
+  if(speed > 0) {
+    m->motor->run(FORWARD);
+  }
+  else if (speed < 0) {
+    m->motor->run(BACKWARD);
+  }
+  else {
+    m->motor->run(RELEASE);
+  }
+
+  m->motor->setSpeed(abs(speed));
 }
 
 Encoder left_enc(4, 5);
 Encoder right_enc(6, 7);
+
+void cmdDiffCallback(const filburbot_msgs::CmdDiffVel& msg) {
+  left.setpoint = msg.left_speed;
+  right.setpoint = msg.right_speed;
+}
+
+ros::Subscriber<filburbot_msgs::CmdDiffVel> sub_cmddiff("cmd_diff", &cmdDiffCallback );
 
 void setup() {
   left.motor_pin = 3;
@@ -53,14 +76,15 @@ void setup() {
 
   AFMS.begin();
 
-  left.motor->setSpeed(255);
+  left.motor->setSpeed(0);
   left.motor->run(BACKWARD);
-  right.motor->setSpeed(255);
+  right.motor->setSpeed(0);
   right.motor->run(FORWARD);
 
   // Initialize ROS
   nh.initNode();
   nh.advertise(pub_encoders);
+  nh.subscribe(sub_cmddiff);
 }
 unsigned long last_time = millis();
 
@@ -73,12 +97,10 @@ void loop() {
     left.speed = (left.position - left.last_position);
     right.speed = (right.position - right.last_position);
 
-    encoders_msg.left_speed = left.speed;
-    encoders_msg.right_speed = right.speed;
-    encoders_msg.left_position = left.position;
-    encoders_msg.right_position = right.position;
-    encoders_msg.header.stamp = nh.now();
-    pub_encoders.publish(&encoders_msg);
+    publishEncoders();
+
+    Filburbot_Motor_setSpeed(&left, left.setpoint);
+    Filburbot_Motor_setSpeed(&right, right.setpoint);
 
     left.last_position = left.position;
     right.last_position = right.position;
@@ -87,4 +109,13 @@ void loop() {
   }
 
   nh.spinOnce();
+}
+
+void publishEncoders() {
+  encoders_msg.left_speed = left.speed;
+  encoders_msg.right_speed = right.speed;
+  encoders_msg.left_position = left.position;
+  encoders_msg.right_position = right.position;
+  encoders_msg.header.stamp = nh.now();
+  pub_encoders.publish(&encoders_msg);
 }
