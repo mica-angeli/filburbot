@@ -21,9 +21,6 @@ ros::Publisher pub_encoders("encoders", &encoders_msg);
 
 struct Filburbot_Motor {
   Adafruit_DCMotor * motor;
-  int motor_pin;
-  int encoder1_pin;
-  int encoder2_pin;
   long position;
   long last_position;
   int speed;
@@ -34,10 +31,10 @@ struct Filburbot_Motor {
 
 Filburbot_Motor left, right;
 
-void Filburbot_Motor_init(Filburbot_Motor *m) {
-  m->motor = AFMS.getMotor(m->motor_pin);
-  pinMode(m->encoder1_pin, INPUT);
-  pinMode(m->encoder2_pin, INPUT);
+void Filburbot_Motor_init(Filburbot_Motor *m, int motor_pin, int encoder1_pin, int encoder2_pin) {
+  m->motor = AFMS.getMotor(motor_pin);
+  pinMode(encoder1_pin, INPUT);
+  pinMode(encoder2_pin, INPUT);
   m->position = 0;
   m->last_position = 0;
   m->speed = 0;
@@ -79,15 +76,8 @@ void cmdDiffCallback(const filburbot_msgs::CmdDiffVel& msg) {
 ros::Subscriber<filburbot_msgs::CmdDiffVel> sub_cmddiff("cmd_diff", &cmdDiffCallback );
 
 void setup() {
-  left.motor_pin = 3;
-  left.encoder1_pin = 5;
-  left.encoder2_pin = 4;
-  Filburbot_Motor_init(&left);
-
-  right.motor_pin = 1;
-  right.encoder1_pin = 7;
-  right.encoder2_pin = 6;
-  Filburbot_Motor_init(&right);
+  Filburbot_Motor_init(&left, 3, 5, 4);
+  Filburbot_Motor_init(&right, 1, 7, 6);
 
   AFMS.begin();
 
