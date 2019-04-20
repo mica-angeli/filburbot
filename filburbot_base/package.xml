@@ -21,6 +21,7 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>serial</exec_depend>
   <exec_depend>filburbot_msgs</exec_depend>
+  <exec_depend>filburbot_control</exec_depend>
 
   <export>
   </export>
