@@ -22,6 +22,7 @@
   <exec_depend>serial</exec_depend>
   <exec_depend>filburbot_msgs</exec_depend>
   <exec_depend>filburbot_control</exec_depend>
+  <exec_depend>filburbot_teleop</exec_depend>
 
   <export>
   </export>

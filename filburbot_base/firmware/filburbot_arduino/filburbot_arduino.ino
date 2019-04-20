@@ -116,6 +116,7 @@ void loop() {
       // Compute commands from PID
       if(abs(left.setpoint) <= MIN_SETPOINT) {
         left.speed_command = 0;
+        left_pid.clear();
       }
       else {
         left.speed_command = left_pid.step(left.setpoint, left.speed);
@@ -123,6 +124,7 @@ void loop() {
 
       if(abs(right.setpoint) <= MIN_SETPOINT) {
         right.speed_command = 0;
+        right_pid.clear();
       }
       else {
         right.speed_command = right_pid.step(right.setpoint, right.speed);

@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <launch>
+  <arg name="teleop" default="True" />
+
   <node
     pkg="filburbot_base"
     type="filburbot_base_node"
@@ -14,6 +16,11 @@
     <param name="baud" value="57600" />
   </node>
 
-  <include file="$(find filburbot_control)/launch/control.launch" />
+  <include
+    file="$(find filburbot_control)/launch/control.launch" />
+
+  <include
+    file="$(find filburbot_bringup)/launch/teleop.launch"
+    if="$(arg teleop)"/>
 
 </launch>

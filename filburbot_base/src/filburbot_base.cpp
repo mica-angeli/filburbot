@@ -20,7 +20,7 @@ void controlLoop(filburbot_base::FilburbotHardware &filburbot,
 }
 
 int main(int argc, char *argv[]) {
-  ros::init(argc, argv, "hullbug_base");
+  ros::init(argc, argv, "filburbot_base");
   ros::NodeHandle nh, private_nh("~");
 
   double control_frequency;
