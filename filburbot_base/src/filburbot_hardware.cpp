@@ -59,10 +59,10 @@ namespace filburbot_base {
   }
 
   void FilburbotHardware::encodersCallback(const filburbot_msgs::Encoders &msg) {
-    left_wheel.position = toRadians(msg.left_position);
-    left_wheel.velocity = toRadians(msg.left_speed) / speed_duration_;
+    left_wheel.position = toRadians(static_cast<double>(msg.left_position));
+    left_wheel.velocity = toRadians(static_cast<double>(msg.left_speed)) / speed_duration_;
 
-    right_wheel.position = toRadians(msg.right_position);
-    right_wheel.velocity = toRadians(msg.right_speed) / speed_duration_;
+    right_wheel.position = toRadians(static_cast<double>(msg.right_position));
+    right_wheel.velocity = toRadians(static_cast<double>(msg.right_speed)) / speed_duration_;
   }
 }
