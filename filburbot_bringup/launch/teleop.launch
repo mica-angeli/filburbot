@@ -13,7 +13,7 @@
     pkg="teleop_twist_joy"
     name="teleop_twist_joy"
     type="teleop_node">
-    <rosparam command="load" file="$(find filburbot_bringup)/config/teleop_power_a.yaml" />
+    <rosparam command="load" file="$(find filburbot_bringup)/config/teleop_ds4.yaml" />
     <remap from="cmd_vel" to="/diff_drive_controller/cmd_vel" />
   </node>
 </launch>
