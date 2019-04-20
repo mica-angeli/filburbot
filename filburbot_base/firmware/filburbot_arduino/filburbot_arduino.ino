@@ -10,6 +10,8 @@
 
 #include <FastPID.h>
 
+#define MIN_SETPOINT 10
+
 FastPID left_pid(0.0, 1.0, 0.0, 10, 9, true);
 FastPID right_pid(0.0, 1.0, 0.0, 10, 9, true);
 
@@ -112,8 +114,19 @@ void loop() {
     }
     else {
       // Compute commands from PID
-      left.speed_command = left_pid.step(left.setpoint, left.speed);
-      right.speed_command = right_pid.step(right.setpoint, right.speed);
+      if(abs(left.setpoint) <= MIN_SETPOINT) {
+        left.speed_command = 0;
+      }
+      else {
+        left.speed_command = left_pid.step(left.setpoint, left.speed);
+      }
+
+      if(abs(right.setpoint) <= MIN_SETPOINT) {
+        right.speed_command = 0;
+      }
+      else {
+        right.speed_command = right_pid.step(right.setpoint, right.speed);
+      }
     }
 
     Filburbot_Motor_setSpeed(&left, left.speed_command);

@@ -26,7 +26,7 @@ namespace filburbot_base {
   void FilburbotHardware::sendCommandsToMotors() {
     filburbot_msgs::CmdDiffVel msg;
     msg.left_speed = static_cast<int>(toEncoderPosition(left_wheel.command) * speed_duration_);
-    msg.right_speed = static_cast<int>(toEncoderPosition(right_wheel.command) * speed_duration_);
+    msg.right_speed = -static_cast<int>(toEncoderPosition(right_wheel.command) * speed_duration_);
     pub_cmd_diff_.publish(msg);
   }
 
@@ -62,7 +62,7 @@ namespace filburbot_base {
     left_wheel.position = toRadians(static_cast<double>(msg.left_position));
     left_wheel.velocity = toRadians(static_cast<double>(msg.left_speed)) / speed_duration_;
 
-    right_wheel.position = toRadians(static_cast<double>(msg.right_position));
-    right_wheel.velocity = toRadians(static_cast<double>(msg.right_speed)) / speed_duration_;
+    right_wheel.position = -toRadians(static_cast<double>(msg.right_position));
+    right_wheel.velocity = -toRadians(static_cast<double>(msg.right_speed)) / speed_duration_;
   }
 }
