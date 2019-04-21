@@ -10,6 +10,7 @@
 
 #include <FastPID.h>
 
+#define LIDAR_SPEED 64
 #define MIN_SETPOINT 10
 
 FastPID left_pid(0.0, 1.0, 0.0, 10, 9, true);
@@ -31,7 +32,7 @@ struct Filburbot_Motor {
   int last_speed_command;
 };
 
-Filburbot_Motor left, right;
+Filburbot_Motor left, right, lidar;
 
 void Filburbot_Motor_init(Filburbot_Motor *m, int motor_pin, int encoder1_pin, int encoder2_pin) {
   m->motor = AFMS.getMotor(motor_pin);
@@ -80,11 +81,13 @@ ros::Subscriber<filburbot_msgs::CmdDiffVel> sub_cmddiff("cmd_diff", &cmdDiffCall
 void setup() {
   Filburbot_Motor_init(&left, 3, 5, 4);
   Filburbot_Motor_init(&right, 1, 7, 6);
+  lidar.motor = AFMS.getMotor(4);
 
   AFMS.begin();
 
   Filburbot_Motor_setSpeed(&left, 0);
   Filburbot_Motor_setSpeed(&right, 0);
+  Filburbot_Motor_setSpeed(&lidar, 0);
 
   // Initialize ROS
   nh.initNode();
@@ -109,10 +112,13 @@ void loop() {
       // Stop motors and reset PIDs if command is dropped
       left.speed_command = 0;
       right.speed_command = 0;
+      lidar.speed_command = 0;
       left_pid.clear();
       right_pid.clear();
     }
     else {
+      lidar.speed_command = LIDAR_SPEED;
+
       // Compute commands from PID
       if(abs(left.setpoint) <= MIN_SETPOINT) {
         left.speed_command = 0;
@@ -133,6 +139,7 @@ void loop() {
 
     Filburbot_Motor_setSpeed(&left, left.speed_command);
     Filburbot_Motor_setSpeed(&right, right.speed_command);
+    Filburbot_Motor_setSpeed(&lidar, lidar.speed_command);
 
     left.last_position = left.position;
     right.last_position = right.position;
