@@ -10,7 +10,7 @@
 
 #include <FastPID.h>
 
-#define LIDAR_SPEED 64
+#define LIDAR_SPEED 75
 #define MIN_SETPOINT 10
 
 FastPID left_pid(0.0, 1.0, 0.0, 10, 9, true);
