@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <node
+    pkg="xv_11_laser_driver"
+    type="neato_laser_publisher"
+    name="lidar">
+    <param name="port" value="/dev/ttyTHS1" />
+    <param name="baud_rate" value="115200" />
+    <param name="firmware_version" value="1" />
+  </node>
+</launch>

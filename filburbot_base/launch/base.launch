@@ -23,4 +23,7 @@
     file="$(find filburbot_bringup)/launch/teleop.launch"
     if="$(arg teleop)"/>
 
+  <include
+    file="$(find filburbot_bringup)/launch/lidar.launch" />
+
 </launch>

@@ -9,8 +9,9 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  
+
   <exec_depend>teleop_twist_joy</exec_depend>
+  <exec_depend>xv_11_laser_driver</exec_depend>
 
   <export>
   </export>
