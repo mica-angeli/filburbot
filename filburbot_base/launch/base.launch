@@ -2,6 +2,9 @@
 <launch>
   <arg name="teleop" default="True" />
 
+  <include
+    file="$(find filburbot_description)/launch/description.launch" />
+
   <node
     pkg="filburbot_base"
     type="filburbot_base_node"
