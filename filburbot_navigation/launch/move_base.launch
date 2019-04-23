@@ -14,6 +14,7 @@
     name="move_base"
     output="screen">
     <remap from="cmd_vel" to="/diff_drive_controller/cmd_vel" />
+    <remap from="odom" to="/diff_drive_controller/odom" />
 
     <param name="base_global_planner" value="$(arg base_global_planner)"/>
     <param name="base_local_planner" value="$(arg base_local_planner)"/>

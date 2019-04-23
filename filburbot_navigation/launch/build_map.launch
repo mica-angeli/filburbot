@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <node
+    pkg="slam_karto"
+    type="slam_karto"
+    name="slam_karto"
+    output="screen"/>
+</launch>

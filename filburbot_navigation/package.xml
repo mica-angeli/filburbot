@@ -17,6 +17,7 @@
   <exec_depend>navfn</exec_depend>
   <exec_depend>base_local_planner</exec_depend>
   <exec_depend>dwa_local_planner</exec_depend>
+  <exec_depend>slam_karto</exec_depend>
 
   <export>
   </export>
