@@ -8,7 +8,7 @@ inflater:
   inflation_radius: 0.20
 
 obstacles:
-  observation_sources: can
+  observation_sources: scan
   base_scan:
     data_type: LaserScan
     topic: scan
