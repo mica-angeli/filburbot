@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="map_file" />
+
+  <node
+    name="map_server"
+    pkg="map_server"
+    type="map_server"
+    args="$(arg map_file)" />
+
+  <node
+    pkg="amcl"
+    type="amcl"
+    name="amcl">
+    <param name="use_map_topic" value="true" />
+    <rosparam file="$(find filburbot_navigation)/config/amcl.yaml" command="load" />
+  </node>
+
+  <node
+    pkg="move_base"
+    type="move_base"
+    name="move_base"
+    respawn="true"
+    output="screen">
+    <remap from="cmd_vel" to="/diff_drive_controller/cmd_vel" />
+    <remap from="odom" to="/diff_drive_controller/odom" />
+    <rosparam file="$(find filburbot_navigation)/config/costmap_common.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find filburbot_navigation)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find filburbot_navigation)/config/costmap_local.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find filburbot_navigation)/config/costmap_global.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find filburbot_navigation)/config/move_base.yaml" command="load" />
+  </node>
+</launch>
