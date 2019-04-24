@@ -1,11 +1,17 @@
 <?xml version="1.0"?>
 <launch>
-
-  <arg name="no_static_map" default="True"/>
+  <arg name="map_file" />
+  <arg name="no_static_map" default="False"/>
 
   <arg name="base_global_planner" default="navfn/NavfnROS"/>
   <arg name="base_local_planner" default="dwa_local_planner/DWAPlannerROS"/>
   <!-- <arg name="base_local_planner" default="base_local_planner/TrajectoryPlannerROS"/> -->
+
+  <node
+    name="map_server"
+    pkg="map_server"
+    type="map_server"
+    args="$(arg map_file)" />
 
   <node
     pkg="move_base"
