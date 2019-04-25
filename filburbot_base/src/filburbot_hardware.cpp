@@ -7,7 +7,7 @@ namespace filburbot_base {
   left_wheel("left_wheel_joint"),
   right_wheel("right_wheel_joint"),
   encoder_counts_per_rev_(44.0),
-  gear_reduction_(40.0),
+  gear_reduction_(40.0 / 0.67128),
   speed_duration_(0.1)
   {
     // Retrieve parameters

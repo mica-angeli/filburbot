@@ -37,7 +37,7 @@ namespace filburbot_base {
     }
 
     inline double toEncoderPosition(double radians) {
-      return (radians / 2.0 * M_PI) * gear_reduction_ * encoder_counts_per_rev_;
+      return (radians / (2.0 * M_PI)) * gear_reduction_ * encoder_counts_per_rev_;
     }
 
   private:
