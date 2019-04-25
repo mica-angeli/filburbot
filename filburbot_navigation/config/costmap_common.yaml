@@ -8,10 +8,11 @@ inflater:
   inflation_radius: 0.20
 
 obstacles:
-  observation_sources: scan
-  base_scan:
+  observation_sources: neato_laser
+  neato_laser:
+    sensor_frame: neato_laser
     data_type: LaserScan
-    topic: scan
+    topic: /scan
     marking: true
     clearing: true
     obstacle_range: 6.0
