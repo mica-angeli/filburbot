@@ -1,0 +1,10 @@
+[Unit]
+Description=DualShock 4 Controller Driver
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/ds4drv
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
