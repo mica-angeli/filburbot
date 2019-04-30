@@ -1,0 +1,10 @@
+[Unit]
+Description=Launch Filburbot Base
+
+[Service]
+Type=simple
+WorkingDirectory=/home/nvidia/filburbot_ws/src/filburbot/filburbot_base/system/
+ExecStart=/home/nvidia/filburbot_ws/src/filburbot/filburbot_base/system/base.sh
+
+[Install]
+WantedBy=default.target
